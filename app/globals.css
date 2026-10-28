@@ -17,27 +17,93 @@
 }
 
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  /* colors */
+  --accent: #f98461;
+  --accent-secondary: #330b1e;
+  --bg-default: #F5F5F7;
+  --bg-surface: #FFFFFF;
+  --fg-primary: #1D1D1F;
+  --fg-muted: #86868B;
+  --border-default: #D2D2D7;
+  --accent-blue: #007AFF;
+
+  /* radius */
+  --radius-xs: 6px;
+  --radius-sm: 10px;
+  --radius-md: 14px;
+  --radius-lg: 20px;
+  --radius-xl: 28px;
+  --radius-full: 9999px;
+
+  /* transitions */
+  --ease-spring: cubic-bezier(0.25, 1, 0.5, 1);
+  --ease-complex: cubic-bezier(0.16, 1, 0.3, 1);
+  --duration-fast: 150ms;
+  --duration-standard: 250ms;
+  --duration-smooth: 350ms;
+  --transition-fast: 150ms cubic-bezier(0.25, 1, 0.5, 1);
+  --transition-standard: 250ms cubic-bezier(0.25, 1, 0.5, 1);
+  --transition-smooth: 350ms cubic-bezier(0.16, 1, 0.3, 1);
+
+  /* spacing */
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-5: 20px;
+  --space-6: 24px;
+  --space-8: 32px;
+  --space-12: 48px;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg-default: #000000;
+    --bg-surface: #1C1C1E;
+    --fg-primary: #F5F5F7;
+    --fg-muted: #98989D;
+    --border-default: #38383A;
+    --accent-blue: #0A84FF;
+  }
 }
 
 @theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
+  /* colors */
+  --color-accent: var(--accent);
+  --color-accent-secondary: var(--accent-secondary);
+  --color-bg-default: var(--bg-default);
+  --color-bg-surface: var(--bg-surface);
+  --color-fg-primary: var(--fg-primary);
+  --color-fg-muted: var(--fg-muted);
+  --color-border-default: var(--border-default);
+  --color-accent-blue: var(--accent-blue);
+
+  /* radius */
+  --radius-xs: var(--radius-xs);
+  --radius-sm: var(--radius-sm);
+  --radius-md: var(--radius-md);
+  --radius-lg: var(--radius-lg);
+  --radius-xl: var(--radius-xl);
+  --radius-full: var(--radius-full);
+
+  /* spacing */
+  --spacing-1: var(--space-1);
+  --spacing-2: var(--space-2);
+  --spacing-3: var(--space-3);
+  --spacing-4: var(--space-4);
+  --spacing-5: var(--space-5);
+  --spacing-6: var(--space-6);
+  --spacing-8: var(--space-8);
+  --spacing-12: var(--space-12);
+
+  /* fonts */
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
   --font-monument: "Monument Grotesk Mono", monospace;
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
-}
-
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  background: var(--bg-default);
+  color: var(--fg-primary);
+  font-family: var(--font-monument), monospace;
 }
