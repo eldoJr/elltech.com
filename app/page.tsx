@@ -1,11 +1,15 @@
 import Header from "@/components/organisms/header";
+import Hero from "@/components/molecules/hero";
+import Process from "@/components/organisms/process";
+import Features from "@/components/organisms/features";
 
 export default function Home() {
   return (
-    <main className="flex flex-col items-center justify-center min-h-screen gap-4">
+    <main>
       <Header />
-      <h1 className="text-xl font-semibold tracking-tight">Elltech</h1>
-      <p className="text-sm text-gray-500">Design digital systems for scalability.</p>
+      <Hero />
+      <Process />
+      <Features />
     </main>
   );
 }
