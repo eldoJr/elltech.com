@@ -1,6 +1,9 @@
 import type { Metadata } from "next";
 import React from "react";
+import { Syne } from "next/font/google";
 import "./globals.css";
+
+const syne = Syne({ subsets: ["latin"], variable: "--font-syne" });
 
 
 export const metadata: Metadata = {
@@ -22,7 +25,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       className="h-full"
       suppressHydrationWarning
     >
-      <body className="min-h-full flex flex-col">
+      <body className={`${syne.variable} min-h-full flex flex-col`}>
         {children}
       </body>
     </html>

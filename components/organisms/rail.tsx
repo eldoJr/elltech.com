@@ -1,27 +1,30 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef } from "react";
+import { motion, useMotionValue, useSpring, useTransform } from "motion/react";
 import Iso from "@/components/atoms/iso";
 
 const items = [
-  { n: "01", label: "Digital Infrastructure" },
-  { n: "02", label: "Scalable Systems" },
-  { n: "03", label: "Distributed Architecture" },
+  { n: "01", label: "Digital Engineering" },
+  { n: "02", label: "Enterprise Platforms" },
+  { n: "03", label: "Application Services" },
+  { n: "04", label: "Data & AI Services" },
 ];
 
 interface Props {
   scrollEl: HTMLElement | null;
+  logoRef: React.RefObject<HTMLDivElement>;
 }
 
-function clamp(v: number, a: number, b: number) {
-  return Math.min(Math.max(v, a), b);
-}
+const SPRING = { stiffness: 80, damping: 20, mass: 0.8 };
 
-function easeOut(t: number) {
-  return 1 - Math.pow(1 - t, 3);
-}
-
-function List({ barWidth, listRef }: { barWidth: number; listRef: React.RefObject<HTMLDivElement> }) {
+function List({
+  barWidth,
+  listRef,
+}: {
+  barWidth: ReturnType<typeof useTransform>;
+  listRef: React.RefObject<HTMLDivElement>;
+}) {
   return (
     <div ref={listRef} className="mx-6 border-t border-black/10">
       <div className="flex items-center gap-3 py-3 border-b border-black/10">
@@ -35,9 +38,9 @@ function List({ barWidth, listRef }: { barWidth: number; listRef: React.RefObjec
             <span className="text-[10px] uppercase tracking-widest text-fg-primary">{label}</span>
           </div>
           {i === 0 && (
-            <div
+            <motion.div
               className="absolute bottom-0 left-0 h-[1.5px] bg-fg-primary"
-              style={{ width: `${barWidth}%` }}
+              style={{ width: barWidth }}
             />
           )}
         </div>
@@ -47,75 +50,79 @@ function List({ barWidth, listRef }: { barWidth: number; listRef: React.RefObjec
   );
 }
 
-export default function Rail({ scrollEl }: Props) {
-  const [progress, setProgress] = useState(0);
-  const areaRef = useRef<HTMLDivElement>(null);   // flex-1 container
-  const listRef = useRef<HTMLDivElement>(null);   // list inner div
+export default function Rail({ scrollEl, logoRef }: Props) {
+  const areaRef = useRef<HTMLDivElement>(null);
+  const isoRef = useRef<HTMLDivElement>(null);
+  const listRef = useRef<HTMLDivElement>(null);
+
+  const raw = useMotionValue(0);
+  const progress = useSpring(raw, SPRING);
 
   useEffect(() => {
     if (!scrollEl) return;
     const onScroll = () => {
       const max = scrollEl.scrollHeight - scrollEl.clientHeight;
-      setProgress(max > 0 ? clamp(scrollEl.scrollTop / max, 0, 1) : 0);
+      raw.set(max > 0 ? Math.min(Math.max(scrollEl.scrollTop / max, 0), 1) : 0);
     };
     scrollEl.addEventListener("scroll", onScroll, { passive: true });
     return () => scrollEl.removeEventListener("scroll", onScroll);
-  }, [scrollEl]);
+  }, [scrollEl, raw]);
 
-  // ISO moves slower — starts at 0.2, finishes at 1.0
-  const tIso = easeOut(clamp((progress - 0.2) / 0.8, 0, 1));
-  // List: phase 1 (0→0.4) mid, phase 2 (0.6→1) final
-  const t1 = easeOut(clamp(progress / 0.4, 0, 1));
-  const t2 = easeOut(clamp((progress - 0.6) / 0.4, 0, 1));
-  const t = t1 * 0.45 + t2 * 0.55;
+  // ISO: shrinks to 0, exits upward from its initial offset position
+  const isoScale = useTransform(progress, [0, 1], [1, 0]);
+  const isoY = useTransform(progress, () => {
+    const p = progress.get();
+    const isoEl = isoRef.current;
+    const areaEl = areaRef.current;
+    if (!isoEl || !areaEl) return 0;
+    const isoRect = isoEl.getBoundingClientRect();
+    const areaRect = areaEl.getBoundingClientRect();
+    const distanceToTop = isoRect.top - areaRect.top;
+    return -p * (distanceToTop + isoRect.height);
+  });
 
-  // ISO: slight scale down + exit through top
-  const isoScale = 1 - tIso * 0.3;
-  const isoTranslateY = tIso * -110; // % of its own height
+  // List: starts at rail bottom (y=0), travels up to sit below logo
+  const listY = useTransform(progress, () => {
+    const areaEl = areaRef.current;
+    const listEl = listRef.current;
+    if (!areaEl || !listEl) return 0;
+    const travel = areaEl.offsetHeight - listEl.offsetHeight - 24;
+    return -progress.get() * travel;
+  });
 
-  // List: measure area height and list height to compute exact upward travel
-  // Target: list top sits ~80px below the logo bottom (logo area ~60px)
-  // area height - list height - 80px gap = how far up from bottom the list should be
-  const areaH = areaRef.current?.offsetHeight ?? 0;
-  const listH = listRef.current?.offsetHeight ?? 0;
-  const listTranslateY = areaH > 0 && listH > 0 ? -(t * (areaH - listH - 24)) : 0;
-
-  const barWidth = progress * 100;
+  const barWidth = useTransform(progress, [0, 1], ["0%", "100%"]);
 
   return (
     <aside className="w-[28vw] flex-shrink-0 flex flex-col h-screen sticky top-0 border-r border-black/10 bg-bg-surface overflow-hidden">
 
       {/* Logo */}
       <div className="px-8 py-6 flex-shrink-0 relative z-10">
-        <span className="text-base font-bold uppercase text-fg-primary">Elltech</span>
+        <div ref={logoRef} className="flex items-center gap-3">
+          <img src="/logo.svg" alt="Elltech" className="h-8 w-auto" />
+          <span className="text-2xl font-bold uppercase text-fg-primary" style={{ fontFamily: "var(--font-syne)" }}>Elltech</span>
+        </div>
       </div>
 
       {/* Animated area */}
       <div ref={areaRef} className="relative flex-1 overflow-hidden">
 
-        {/* ISO */}
-        <div
-          className="absolute inset-0 flex items-center justify-center -translate-y-12"
-          style={{
-            transform: `translateY(calc(-3rem + ${isoTranslateY}%)) scale(${isoScale})`,
-            willChange: "transform",
-          }}
+        {/* ISO — starts slightly above center */}
+        <motion.div
+          className="absolute inset-0 flex items-center justify-center -translate-y-16"
+          style={{ y: isoY, scale: isoScale, originY: 0.5 }}
         >
-          <div className="w-[75%]">
+          <div ref={isoRef} className="w-[75%]">
             <Iso />
           </div>
-        </div>
+        </motion.div>
 
-        {/* List — anchored to bottom, slides up */}
-        <div
+        {/* List — starts at rail bottom, slides up to rest below logo */}
+        <motion.div
           className="absolute bottom-0 left-0 right-0 bg-bg-surface"
-          style={{
-            transform: `translateY(${listTranslateY}px)`,
-            willChange: "transform",
-          }}
+          style={{ y: listY }}
         >
           <List barWidth={barWidth} listRef={listRef as React.RefObject<HTMLDivElement>} />
-        </div>
+        </motion.div>
 
       </div>
     </aside>
