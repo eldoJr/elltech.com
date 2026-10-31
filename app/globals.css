@@ -1,40 +1,20 @@
 @import "tailwindcss";
-@import "bootstrap-icons/font/bootstrap-icons.css";
 
 @font-face {
-  font-display: block;
-  font-family: "bootstrap-icons";
-  src: url("/fonts/bootstrap-icons.woff2") format("woff2"),
-       url("/fonts/bootstrap-icons.woff") format("woff");
-}
-
-@font-face {
-  font-family: "Monument Grotesk Mono";
-  src: url("/fonts/MonumentGroteskMono-Regular.woff2") format("woff2");
+  font-family: "Flexa M";
+  src: local("Verdana");
   font-weight: 400;
-  font-style: normal;
-  font-display: swap;
-}
-
-@font-face {
-  font-family: "Monument Grotesk Mono";
-  src: url("/fonts/MonumentGroteskMono-Medium.woff2") format("woff2");
-  font-weight: 500;
   font-style: normal;
   font-display: swap;
 }
 
 :root {
   /* colors */
-  --accent: #f98461;
-  --accent-secondary: #330b1e;
-  --bg-default: #F5F5F7;
+  --bg-default: #E9EDEF;
   --bg-surface: #FFFFFF;
-  --fg-primary: #1D1D1F;
-  --fg-muted: #86868B;
-  --fg-white: #ffffff;
-  --border-default: #D2D2D7;
-  --accent-blue: #007AFF;
+  --fg-primary: #0d0d0d;
+  --fg-muted: #6b6b6b;
+  --accent: #7a1530;
 
   /* typography */
   --font-size-base: 14px;
@@ -68,46 +48,13 @@
   --space-12: 48px;
 }
 
-@media (prefers-color-scheme: dark) {
-  :root:not(.light) {
-    --bg-default: #000000;
-    --bg-surface: #1C1C1E;
-    --fg-primary: #F5F5F7;
-    --fg-muted: #98989D;
-    --border-default: #38383A;
-    --accent-blue: #0A84FF;
-  }
-}
-
-html.dark {
-  --bg-default: #000000;
-  --bg-surface: #1C1C1E;
-  --fg-primary: #F5F5F7;
-  --fg-muted: #98989D;
-  --border-default: #38383A;
-  --accent-blue: #0A84FF;
-}
-
-html.light {
-  --bg-default: #F5F5F7;
-  --bg-surface: #FFFFFF;
-  --fg-primary: #1D1D1F;
-  --fg-muted: #86868B;
-  --border-default: #D2D2D7;
-  --accent-blue: #007AFF;
-}
-
 @theme inline {
   /* colors */
-  --color-accent: var(--accent);
-  --color-accent-secondary: var(--accent-secondary);
   --color-bg-default: var(--bg-default);
   --color-bg-surface: var(--bg-surface);
   --color-fg-primary: var(--fg-primary);
   --color-fg-muted: var(--fg-muted);
-  --color-fg-white: var(--fg-white);
-  --color-border-default: var(--border-default);
-  --color-accent-blue: var(--accent-blue);
+  --color-accent: var(--accent);
 
   /* radius */
   --radius-xs: var(--radius-xs);
@@ -128,27 +75,11 @@ html.light {
   --spacing-12: var(--space-12);
 
   /* fonts */
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-  --font-monument: "Monument Grotesk Mono", monospace;
+  --font-flexa: "Flexa M", Verdana, sans-serif;
 }
 
 body {
   background: var(--bg-default);
   color: var(--fg-primary);
-  font-family: var(--font-monument), monospace;
-  transition: background var(--transition-standard), color var(--transition-standard);
+  font-family: var(--font-flexa);
 }
-
-.navlink {
-  font-size: 12px;
-  color: var(--fg-muted);
-  padding: 6px var(--space-4);
-  display: inline-flex;
-  align-items: center;
-  letter-spacing: 0.01em;
-  text-decoration: none;
-}
-
-.btn-primary:hover { opacity: 0.85; }
-.btn-ghost:hover { background: var(--bg-surface); }
