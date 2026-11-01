@@ -42,10 +42,8 @@ export default function Hero() {
         ["[data-bottom]", { y: "105%" }, { duration: 0 }],
       ]);
 
-      // Nav first
-      await animate("[data-nav]", { y: "0%" }, { duration: D, ease: E, delay: stagger(0.09) });
-
-      // Headline lines + bottom elements simultaneously
+      // All elements simultaneously
+      animate("[data-nav]", { y: "0%" }, { duration: D, ease: E, delay: stagger(0.09) });
       animate("[data-line]", { y: "0%" }, { duration: D, ease: E, delay: stagger(0.1) });
       await animate("[data-bottom]", { y: "0%" }, { duration: D, ease: E, delay: stagger(0.11) });
 

@@ -18,7 +18,7 @@ interface Props {
 
 const SCROLL_SPRING = { stiffness: 80, damping: 20, mass: 0.8 };
 const E = [0.16, 1, 0.3, 1] as const;
-const T = { ease: E, duration: 1.0 };
+const T = { ease: E, duration: 1.4 };
 
 function List({
   barWidth,
@@ -152,7 +152,7 @@ export default function Rail({ scrollEl, logoRef, ready }: Props) {
         className="absolute top-0 right-0 w-px bg-black/10"
         initial={{ scaleY: 0 }}
         animate={ready ? { scaleY: 1 } : {}}
-        transition={{ ease: [0.76, 0, 0.24, 1], duration: 1.6, delay: 0.6 }}
+        transition={{ ease: [0.16, 1, 0.3, 1], duration: 4.5, delay: 0.8 }}
         style={{ height: "100%", transformOrigin: "bottom" }}
       />
     </aside>
