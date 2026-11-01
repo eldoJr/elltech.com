@@ -1,7 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useRef, useState } from "react";
-import { AnimatePresence, useAnimate, stagger } from "motion/react";
+import { AnimatePresence, useAnimate, stagger, animate } from "motion/react";
 import Rail from "@/components/organisms/rail";
 import Intro from "@/components/organisms/intro";
 import Engineering from "@/components/organisms/engineering";
@@ -27,9 +27,37 @@ export default function Hero() {
   const railLogoRef = useRef<HTMLDivElement>(null);
   const [scope, animate] = useAnimate();
 
+  const [bgTinted, setBgTinted] = useState(false);
+
+  const mainRef = useRef<HTMLElement | null>(null);
+  const bgState = useRef<"white" | "tinted">("white");
+
   const scrollRef = useCallback((el: HTMLElement | null) => {
     setScrollEl(el);
+    mainRef.current = el;
   }, []) as React.RefCallback<HTMLElement>;
+
+  useEffect(() => {
+    if (!scrollEl) return;
+    const onScroll = () => {
+      const platforms = scrollEl.querySelector("#enterprise-platforms");
+      if (!platforms || !mainRef.current) return;
+      const rect = platforms.getBoundingClientRect();
+      const containerRect = scrollEl.getBoundingClientRect();
+      const inside = rect.top < containerRect.bottom && rect.bottom > containerRect.top;
+      if (inside && bgState.current !== "tinted") {
+        bgState.current = "tinted";
+        setBgTinted(true);
+        animate(mainRef.current, { backgroundColor: "#E9EDEF" }, { duration: 1.2, ease: [0.16, 1, 0.3, 1] });
+      } else if (!inside && bgState.current !== "white") {
+        bgState.current = "white";
+        setBgTinted(false);
+        animate(mainRef.current, { backgroundColor: "#ffffff" }, { duration: 1.2, ease: [0.16, 1, 0.3, 1] });
+      }
+    };
+    scrollEl.addEventListener("scroll", onScroll, { passive: true });
+    return () => scrollEl.removeEventListener("scroll", onScroll);
+  }, [scrollEl]);
 
   useEffect(() => {
     if (!introReady) return;
@@ -60,9 +88,9 @@ export default function Hero() {
       </AnimatePresence>
 
       <div className="flex h-screen overflow-hidden">
-        <Rail scrollEl={scrollEl} logoRef={railLogoRef} ready={railReady} />
+        <Rail scrollEl={scrollEl} logoRef={railLogoRef} ready={railReady} bgTinted={bgTinted} />
 
-        <main ref={scrollRef} className="flex-1 overflow-y-auto bg-bg-surface">
+        <main ref={scrollRef} className="flex-1 overflow-y-auto" style={{ backgroundColor: "#ffffff" }}>
 
           <div ref={scope} className="flex flex-col min-h-screen">
 

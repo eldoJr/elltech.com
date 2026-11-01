@@ -32,13 +32,18 @@ export default function Intro({ onDone, targetRef }: Props) {
       // 2. hold
       await new Promise((r) => setTimeout(r, 1000));
 
-      // 3. fly group to exact rail logo position
+      // 3. fly group to exact rail logo position + bg transitions to white simultaneously
       const target = targetRef.current;
       if (target) {
         const from = group.getBoundingClientRect();
         const to = target.getBoundingClientRect();
         const dx = to.left - from.left;
         const dy = to.top - from.top;
+        animate(
+          root,
+          { backgroundColor: "#ffffff" },
+          { duration: 0.5, ease: [0.16, 1, 0.3, 1], delay: 0.6 }
+        );
         await animate(
           group,
           { x: dx, y: dy },
@@ -56,7 +61,7 @@ export default function Intro({ onDone, targetRef }: Props) {
   }, [onDone, targetRef]);
 
   return (
-    <div ref={rootRef} className="fixed inset-0 z-50 bg-bg-surface flex items-center justify-center">
+    <div ref={rootRef} className="fixed inset-0 z-50 flex items-center justify-center" style={{ backgroundColor: "#E9EDEF" }}>
       <div ref={groupRef} className="flex items-center gap-3">
         <img ref={logoRef} src="/logo.svg" alt="" className="h-8 w-auto" style={{ opacity: 0 }} />
         <span

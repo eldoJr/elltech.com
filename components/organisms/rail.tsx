@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import { motion, useMotionValue, useSpring, useTransform, MotionValue } from "motion/react";
+import { motion, useMotionValue, useSpring, useTransform, MotionValue, animate } from "motion/react";
 import Iso from "@/components/atoms/iso";
 
 const items = [
@@ -14,6 +14,7 @@ interface Props {
   scrollEl: HTMLElement | null;
   logoRef: React.RefObject<HTMLDivElement>;
   ready: boolean;
+  bgTinted: boolean;
 }
 
 const SCROLL_SPRING = { stiffness: 80, damping: 20, mass: 0.8 };
@@ -69,14 +70,24 @@ function List({
   );
 }
 
-export default function Rail({ scrollEl, logoRef, ready }: Props) {
+export default function Rail({ scrollEl, logoRef, ready, bgTinted }: Props) {
   const areaRef = useRef<HTMLDivElement>(null);
   const isoRef = useRef<HTMLDivElement>(null);
   const listRef = useRef<HTMLDivElement>(null);
+  const listContainerRef = useRef<HTMLDivElement>(null);
+  const asideRef = useRef<HTMLElement>(null);
   const [activeIndex, setActiveIndex] = useState(0);
 
   const raw = useMotionValue(0);
   const progress = useSpring(raw, SCROLL_SPRING);
+
+  useEffect(() => {
+    if (!asideRef.current) return;
+    const bg = bgTinted ? "#E9EDEF" : "#ffffff";
+    animate(asideRef.current, { backgroundColor: bg }, { duration: 1.2, ease: [0.16, 1, 0.3, 1] });
+    if (listContainerRef.current)
+      animate(listContainerRef.current, { backgroundColor: bg }, { duration: 1.2, ease: [0.16, 1, 0.3, 1] });
+  }, [bgTinted]);
 
   useEffect(() => {
     if (!scrollEl) return;
@@ -130,7 +141,7 @@ export default function Rail({ scrollEl, logoRef, ready }: Props) {
   const barWidth = useTransform(progress, [0, 1], ["0%", "100%"]);
 
   return (
-    <aside className="w-[32vw] flex-shrink-0 flex flex-col h-screen sticky top-0 bg-bg-surface overflow-hidden relative">
+    <aside ref={asideRef} className="w-[32vw] flex-shrink-0 flex flex-col h-screen sticky top-0 overflow-hidden relative" style={{ backgroundColor: "#ffffff" }}>
 
       {/* Logo */}
       <div className="px-8 py-6 flex-shrink-0 relative z-10">
@@ -164,8 +175,9 @@ export default function Rail({ scrollEl, logoRef, ready }: Props) {
 
         {/* List */}
         <motion.div
-          className="absolute bottom-0 left-0 right-0 bg-bg-surface"
-          style={{ y: listY }}
+          ref={listContainerRef}
+          className="absolute bottom-0 left-0 right-0"
+          style={{ y: listY, backgroundColor: "#ffffff" }}
         >
           <List
             barWidth={barWidth}
