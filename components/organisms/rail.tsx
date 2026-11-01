@@ -16,34 +16,49 @@ interface Props {
   ready: boolean;
 }
 
-const SPRING = { stiffness: 80, damping: 20, mass: 0.8 };
-const EASE = [0.16, 1, 0.3, 1] as const;
+const SCROLL_SPRING = { stiffness: 80, damping: 20, mass: 0.8 };
+const E = [0.16, 1, 0.3, 1] as const;
+const T = { ease: E, duration: 1.0 };
 
 function List({
   barWidth,
   listRef,
+  ready,
 }: {
   barWidth: MotionValue<string>;
   listRef: React.RefObject<HTMLDivElement>;
+  ready: boolean;
 }) {
   return (
-    <div ref={listRef} className="mx-6 border-t border-black/10">
-      <div className="flex items-center gap-3 py-2 border-b border-black/10">
-        <span className="text-[10px] text-fg-muted">—</span>
-        <span className="text-[10px] uppercase tracking-widest text-fg-muted">Services</span>
+    <div ref={listRef} className="mx-6">
+      <div className="overflow-hidden">
+        <motion.div
+          className="flex items-center gap-3 py-2 border-t border-b border-black/10"
+          initial={{ y: "105%" }}
+          animate={ready ? { y: "0%" } : {}}
+          transition={{ ...T, delay: 0 }}
+        >
+          <span className="text-[10px] text-fg-muted">—</span>
+          <span className="text-[10px] uppercase tracking-widest text-fg-muted">Services</span>
+        </motion.div>
       </div>
       {items.map(({ n, label }, i) => (
-        <div key={n} className="relative">
-          <div className="flex items-center gap-4 py-2 border-b border-black/10 hover:bg-black/5 cursor-pointer transition-colors">
+        <div key={n} className="overflow-hidden">
+          <motion.div
+            className="relative flex items-center gap-4 py-2 border-b border-black/10 hover:bg-black/5 cursor-pointer transition-colors"
+            initial={{ y: "105%" }}
+            animate={ready ? { y: "0%" } : {}}
+            transition={{ ...T, delay: i * 0.07 }}
+          >
             <span className="text-[10px] text-fg-muted w-5">{n}</span>
             <span className="text-[10px] uppercase tracking-widest text-fg-primary">{label}</span>
-          </div>
-          {i === 0 && (
-            <motion.div
-              className="absolute bottom-0 left-0 h-[1.5px] bg-fg-primary"
-              style={{ width: barWidth }}
-            />
-          )}
+            {i === 0 && (
+              <motion.div
+                className="absolute bottom-0 left-0 h-[1.5px] bg-fg-primary"
+                style={{ width: barWidth }}
+              />
+            )}
+          </motion.div>
         </div>
       ))}
       <div className="py-3" />
@@ -57,7 +72,7 @@ export default function Rail({ scrollEl, logoRef, ready }: Props) {
   const listRef = useRef<HTMLDivElement>(null);
 
   const raw = useMotionValue(0);
-  const progress = useSpring(raw, SPRING);
+  const progress = useSpring(raw, SCROLL_SPRING);
 
   useEffect(() => {
     if (!scrollEl) return;
@@ -77,29 +92,24 @@ export default function Rail({ scrollEl, logoRef, ready }: Props) {
     if (!isoEl || !areaEl) return 0;
     const isoRect = isoEl.getBoundingClientRect();
     const areaRect = areaEl.getBoundingClientRect();
-    const distanceToTop = isoRect.top - areaRect.top;
-    return -p * (distanceToTop + isoRect.height);
+    return -p * (isoRect.top - areaRect.top + isoRect.height);
   });
 
   const listY = useTransform(progress, () => {
     const areaEl = areaRef.current;
     const listEl = listRef.current;
     if (!areaEl || !listEl) return 0;
-    const travel = areaEl.offsetHeight - listEl.offsetHeight - 24;
-    return -progress.get() * travel;
+    return -progress.get() * (areaEl.offsetHeight - listEl.offsetHeight - 24);
   });
 
   const barWidth = useTransform(progress, [0, 1], ["0%", "100%"]);
 
   return (
-    <aside className="w-[28vw] flex-shrink-0 flex flex-col h-screen sticky top-0 bg-bg-surface overflow-hidden relative">
+    <aside className="w-[32vw] flex-shrink-0 flex flex-col h-screen sticky top-0 bg-bg-surface overflow-hidden relative">
 
-      {/* Logo — fades in after intro flies it into position */}
+      {/* Logo */}
       <div className="px-8 py-6 flex-shrink-0 relative z-10">
-        <div
-          ref={logoRef}
-          className="flex items-center gap-3"
-        >
+        <div ref={logoRef} className="flex items-center gap-3">
           <img src="/logo.svg" alt="Elltech" className="h-8 w-auto" />
           <span className="text-2xl font-bold uppercase text-fg-primary" style={{ fontFamily: "var(--font-syne)" }}>Elltech</span>
         </div>
@@ -108,39 +118,42 @@ export default function Rail({ scrollEl, logoRef, ready }: Props) {
       {/* Animated area */}
       <div ref={areaRef} className="relative flex-1 overflow-hidden">
 
-        {/* ISO — slides up from below on ready */}
-        <motion.div
-          className="absolute inset-0 flex items-center justify-center -translate-y-16"
-          style={{ y: isoY, scale: isoScale, originY: 0.5 }}
-          initial={{ y: 80, opacity: 0 }}
-          animate={ready ? { y: 0, opacity: 1 } : {}}
-          transition={{ duration: 0.8, ease: EASE, delay: 0.1 }}
-        >
-          <div ref={isoRef} className="w-[75%]">
-            <Iso />
-          </div>
-        </motion.div>
+        {/* ISO — clip container, inner handles scroll-driven motion */}
+        <div className="absolute inset-0 overflow-hidden">
+          <motion.div
+            className="absolute inset-0 flex items-center justify-center"
+            initial={{ y: "100%" }}
+            animate={ready ? { y: "-4rem" } : {}}
+            transition={{ ...T, delay: 0 }}
+          >
+            <motion.div
+              style={{ y: isoY, scale: isoScale, originY: 0.5 }}
+              className="absolute inset-0 flex items-center justify-center"
+            >
+              <div ref={isoRef} className="w-[75%]">
+                <Iso />
+              </div>
+            </motion.div>
+          </motion.div>
+        </div>
 
-        {/* List — slides up from below on ready, slightly after ISO */}
+        {/* List */}
         <motion.div
           className="absolute bottom-0 left-0 right-0 bg-bg-surface"
           style={{ y: listY }}
-          initial={{ y: 60, opacity: 0 }}
-          animate={ready ? { y: 0, opacity: 1 } : {}}
-          transition={{ duration: 0.8, ease: EASE, delay: 0.2 }}
         >
-          <List barWidth={barWidth} listRef={listRef as React.RefObject<HTMLDivElement>} />
+          <List barWidth={barWidth} listRef={listRef as React.RefObject<HTMLDivElement>} ready={ready} />
         </motion.div>
 
       </div>
 
-      {/* Border line — grows from bottom to top, last */}
+      {/* Border line — draws from bottom to top, last */}
       <motion.div
-        className="absolute top-0 right-0 w-px bg-black/10 origin-bottom"
+        className="absolute top-0 right-0 w-px bg-black/10"
         initial={{ scaleY: 0 }}
         animate={ready ? { scaleY: 1 } : {}}
-        transition={{ duration: 0.7, ease: EASE, delay: 0.7 }}
-        style={{ height: "100%" }}
+        transition={{ ease: [0.76, 0, 0.24, 1], duration: 1.6, delay: 0.6 }}
+        style={{ height: "100%", transformOrigin: "bottom" }}
       />
     </aside>
   );

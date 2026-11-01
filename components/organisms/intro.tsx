@@ -26,11 +26,11 @@ export default function Intro({ onDone, targetRef }: Props) {
       await animate(
         [logo, word],
         { opacity: [0, 1] },
-        { duration: 0.9, ease: [0.16, 1, 0.3, 1], delay: 0.08 }
+        { duration: 1.2, ease: [0.16, 1, 0.3, 1], delay: 0.2 }
       );
 
       // 2. hold
-      await new Promise((r) => setTimeout(r, 700));
+      await new Promise((r) => setTimeout(r, 1000));
 
       // 3. fly group to exact rail logo position
       const target = targetRef.current;
@@ -42,12 +42,12 @@ export default function Intro({ onDone, targetRef }: Props) {
         await animate(
           group,
           { x: dx, y: dy },
-          { duration: 0.7, ease: [0.76, 0, 0.24, 1] }
+          { duration: 1.0, ease: [0.76, 0, 0.24, 1] }
         );
       }
 
       // 4. overlay fades out — logo stays visible throughout
-      await animate(root, { opacity: [1, 0] }, { duration: 0.4, ease: "easeIn" });
+      await animate(root, { opacity: [1, 0] }, { duration: 0.7, ease: "easeIn" });
 
       onDone();
     };
