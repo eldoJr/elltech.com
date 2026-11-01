@@ -1,7 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useRef, useState } from "react";
-import { AnimatePresence, useAnimate, stagger, animate } from "motion/react";
+import { AnimatePresence, motion, useAnimate, stagger, animate } from "motion/react";
 import Rail from "@/components/organisms/rail";
 import Intro from "@/components/organisms/intro";
 import Engineering from "@/components/organisms/engineering";
@@ -11,6 +11,36 @@ import Data from "@/components/organisms/data";
 
 const E = [0.16, 1, 0.3, 1] as const;
 const D = 1.4;
+
+function NavItem({ label }: { label: string }) {
+  return (
+    <div className="overflow-hidden relative">
+      <motion.a
+        href="#"
+        className="relative block px-4 py-1.5 text-[10px] uppercase tracking-widest text-fg-primary cursor-pointer"
+        initial="rest"
+        whileHover="hover"
+      >
+        <motion.span
+          className="absolute inset-0 bg-fg-primary"
+          variants={{
+            rest: { scaleY: 0, transformOrigin: "bottom" },
+            hover: { scaleY: 1, transformOrigin: "bottom", transition: { duration: 0.4, ease: [0.16, 1, 0.3, 1] } },
+          }}
+        />
+        <motion.span
+          className="relative z-10 block"
+          variants={{
+            rest: { color: "#0d0d0d", transition: { duration: 0.25, ease: "easeOut" } },
+            hover: { color: "#ffffff", transition: { duration: 0.25, ease: "easeOut" } },
+          }}
+        >
+          {label}
+        </motion.span>
+      </motion.a>
+    </div>
+  );
+}
 
 const LINES = [
   "Systems will reshape",
@@ -116,9 +146,9 @@ export default function Hero() {
               <div className="flex items-center divide-x divide-black/20 border border-black/20">
                 {["Services", "Work", "Contact", "Blog"].map((item) => (
                   <div key={item} className="overflow-hidden">
-                    <a data-nav href="#" className="block px-4 py-1.5 text-[10px] uppercase tracking-widest text-fg-primary hover:bg-black/5 transition-colors" style={{ transform: "translateY(105%)" }}>
-                      {item}
-                    </a>
+                    <div data-nav style={{ transform: "translateY(105%)" }}>
+                      <NavItem label={item} />
+                    </div>
                   </div>
                 ))}
               </div>
@@ -146,20 +176,48 @@ export default function Hero() {
                   </span>
                 </div>
                 <div className="overflow-hidden">
-                  <span data-bottom className="block border border-black/25 border-l-0 px-3 py-1.5 text-[10px] uppercase tracking-widest text-fg-primary rounded-r-full" style={{ transform: "translateY(105%)" }}>
+                  <span data-bottom className="block w-6 h-px bg-black/25" style={{ transform: "translateY(105%)" }} />
+                </div>
+                <div className="overflow-hidden">
+                  <span data-bottom className="block border border-black/25 px-3 py-1.5 text-[10px] uppercase tracking-widest text-fg-primary rounded-full" style={{ transform: "translateY(105%)" }}>
                     Scalability
                   </span>
                 </div>
               </div>
               <div className="m-6 overflow-hidden">
-                <div
+                <motion.div
                   data-bottom
-                  className="bg-accent text-white px-10 py-8 flex items-center justify-between gap-20 cursor-pointer hover:opacity-90 transition-opacity min-w-[260px]"
+                  className="relative bg-accent text-white px-10 py-8 flex items-center justify-between gap-20 cursor-pointer min-w-[260px] overflow-hidden"
                   style={{ transform: "translateY(105%)" }}
+                  initial="rest"
+                  whileHover="hover"
                 >
-                  <span className="text-sm tracking-wide">Start a project</span>
-                  <span className="text-base">→</span>
-                </div>
+                  <motion.span
+                    className="absolute inset-0 bg-fg-primary"
+                    variants={{
+                      rest: { scaleY: 0, transformOrigin: "bottom" },
+                      hover: { scaleY: 1, transformOrigin: "bottom", transition: { duration: 0.4, ease: [0.16, 1, 0.3, 1] } },
+                    }}
+                  />
+                  <motion.span
+                    className="relative z-10 text-sm tracking-wide"
+                    variants={{
+                      rest: { color: "#ffffff", transition: { duration: 0.25, ease: "easeOut" } },
+                      hover: { color: "#ffffff", transition: { duration: 0.25, ease: "easeOut" } },
+                    }}
+                  >
+                    Start a project
+                  </motion.span>
+                  <motion.span
+                    className="relative z-10 text-base"
+                    variants={{
+                      rest: { color: "#ffffff", transition: { duration: 0.25, ease: "easeOut" } },
+                      hover: { color: "#ffffff", transition: { duration: 0.25, ease: "easeOut" } },
+                    }}
+                  >
+                    →
+                  </motion.span>
+                </motion.div>
               </div>
             </div>
 
