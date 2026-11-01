@@ -46,7 +46,7 @@ export default function Intro({ onDone, targetRef }: Props) {
         );
       }
 
-      // 4. overlay fades out
+      // 4. overlay fades out — logo stays visible throughout
       await animate(root, { opacity: [1, 0] }, { duration: 0.4, ease: "easeIn" });
 
       onDone();

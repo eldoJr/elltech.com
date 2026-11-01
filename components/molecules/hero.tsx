@@ -25,12 +25,7 @@ export default function Hero() {
         {!ready && <Intro onDone={() => setReady(true)} targetRef={railLogoRef} />}
       </AnimatePresence>
 
-      <motion.div
-        className="flex h-screen overflow-hidden"
-        initial={{ opacity: 0 }}
-        animate={ready ? { opacity: 1 } : { opacity: 0 }}
-        transition={{ duration: 0.5, ease: [0.16, 1, 0.3, 1] }}
-      >
+      <div className="flex h-screen overflow-hidden">
         <Rail scrollEl={scrollEl} logoRef={railLogoRef} ready={ready} />
 
         <main ref={scrollRef} className="flex-1 overflow-y-auto bg-bg-surface">
@@ -67,7 +62,7 @@ export default function Hero() {
           <Data />
 
         </main>
-      </motion.div>
+      </div>
     </>
   );
 }
