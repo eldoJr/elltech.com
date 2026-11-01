@@ -1,13 +1,13 @@
 "use client";
 
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import { motion, useMotionValue, useSpring, useTransform, MotionValue } from "motion/react";
 import Iso from "@/components/atoms/iso";
 
 const items = [
-  { n: "01", label: "Digital Engineering" },
-  { n: "02", label: "Enterprise Platforms" },
-  { n: "03", label: "Data & AI Services" },
+  { n: "01", label: "Digital Engineering", id: "digital-engineering" },
+  { n: "02", label: "Enterprise Platforms", id: "enterprise-platforms" },
+  { n: "03", label: "Data & AI Services", id: "data-ai-services" },
 ];
 
 interface Props {
@@ -24,10 +24,14 @@ function List({
   barWidth,
   listRef,
   ready,
+  activeIndex,
+  onItemClick,
 }: {
   barWidth: MotionValue<string>;
   listRef: React.RefObject<HTMLDivElement>;
   ready: boolean;
+  activeIndex: number;
+  onItemClick: (id: string) => void;
 }) {
   return (
     <div ref={listRef} className="mx-6">
@@ -42,22 +46,21 @@ function List({
           <span className="text-[10px] uppercase tracking-widest text-fg-muted">Services</span>
         </motion.div>
       </div>
-      {items.map(({ n, label }, i) => (
+      {items.map(({ n, label, id }, i) => (
         <div key={n} className="overflow-hidden">
           <motion.div
             className="relative flex items-center gap-4 py-2 border-b border-black/10 hover:bg-black/5 cursor-pointer transition-colors"
             initial={{ y: "105%" }}
             animate={ready ? { y: "0%" } : {}}
             transition={{ ...T, delay: i * 0.07 }}
+            onClick={() => onItemClick(id)}
           >
-            <span className="text-[10px] text-fg-muted w-5">{n}</span>
-            <span className="text-[10px] uppercase tracking-widest text-fg-primary">{label}</span>
-            {i === 0 && (
-              <motion.div
-                className="absolute bottom-0 left-0 h-[1.5px] bg-fg-primary"
-                style={{ width: barWidth }}
-              />
-            )}
+            <span className={`text-[10px] w-5 transition-colors ${activeIndex === i ? "text-fg-primary" : "text-fg-muted"}`}>{n}</span>
+            <span className={`text-[10px] uppercase tracking-widest transition-colors ${activeIndex === i ? "text-fg-primary font-medium" : "text-fg-primary"}`}>{label}</span>
+            <motion.div
+              className="absolute bottom-0 left-0 h-[1.5px] bg-fg-primary"
+              style={{ width: activeIndex === i ? barWidth : "0%" }}
+            />
           </motion.div>
         </div>
       ))}
@@ -70,6 +73,7 @@ export default function Rail({ scrollEl, logoRef, ready }: Props) {
   const areaRef = useRef<HTMLDivElement>(null);
   const isoRef = useRef<HTMLDivElement>(null);
   const listRef = useRef<HTMLDivElement>(null);
+  const [activeIndex, setActiveIndex] = useState(0);
 
   const raw = useMotionValue(0);
   const progress = useSpring(raw, SCROLL_SPRING);
@@ -79,10 +83,31 @@ export default function Rail({ scrollEl, logoRef, ready }: Props) {
     const onScroll = () => {
       const max = scrollEl.scrollHeight - scrollEl.clientHeight;
       raw.set(max > 0 ? Math.min(Math.max(scrollEl.scrollTop / max, 0), 1) : 0);
+
+      // Determine active section
+      const sectionIds = items.map((item) => item.id);
+      let current = 0;
+      sectionIds.forEach((id, i) => {
+        const el = scrollEl.querySelector(`#${id}`);
+        if (el) {
+          const rect = el.getBoundingClientRect();
+          const containerRect = scrollEl.getBoundingClientRect();
+          if (rect.bottom - containerRect.top <= containerRect.height) {
+            current = i;
+          }
+        }
+      });
+      setActiveIndex(current);
     };
     scrollEl.addEventListener("scroll", onScroll, { passive: true });
     return () => scrollEl.removeEventListener("scroll", onScroll);
   }, [scrollEl, raw]);
+
+  const scrollToSection = (id: string) => {
+    if (!scrollEl) return;
+    const el = scrollEl.querySelector(`#${id}`);
+    if (el) el.scrollIntoView({ behavior: "smooth" });
+  };
 
   const isoScale = useTransform(progress, [0, 1], [1, 0]);
   const isoY = useTransform(progress, () => {
@@ -142,7 +167,13 @@ export default function Rail({ scrollEl, logoRef, ready }: Props) {
           className="absolute bottom-0 left-0 right-0 bg-bg-surface"
           style={{ y: listY }}
         >
-          <List barWidth={barWidth} listRef={listRef as React.RefObject<HTMLDivElement>} ready={ready} />
+          <List
+            barWidth={barWidth}
+            listRef={listRef as React.RefObject<HTMLDivElement>}
+            ready={ready}
+            activeIndex={activeIndex}
+            onItemClick={scrollToSection}
+          />
         </motion.div>
 
       </div>
