@@ -7,6 +7,7 @@ interface CardData {
   description: string;
   url: string;
   color: string;
+  badges?: string[];
 }
 
 interface CardProps {
@@ -15,13 +16,14 @@ interface CardProps {
   description: string;
   url: string;
   color: string;
+  badges?: string[];
   progress: MotionValue<number>;
   range: [number, number];
   targetScale: number;
   scrollEl: RefObject<HTMLElement | null>;
 }
 
-const Card = ({ i, title, description, url, color, progress, range, targetScale, scrollEl }: CardProps) => {
+const Card = ({ i, title, description, url, color, badges, progress, range, targetScale, scrollEl }: CardProps) => {
   const container = useRef(null);
   const { scrollYProgress } = useScroll({
     target: container,
@@ -38,16 +40,23 @@ const Card = ({ i, title, description, url, color, progress, range, targetScale,
         style={{ backgroundColor: color, scale, top: `calc(-5vh + ${i * 25}px)` }}
         className="flex flex-col relative -top-[25%] h-[500px] w-[80%] p-10 origin-top border border-black/10"
       >
-        <h2 className="text-xl font-bold text-fg-primary mb-1">{title}</h2>
+        <h2 className="text-xl font-bold text-fg-primary mb-1 text-center">{title}</h2>
         <div className="flex h-full mt-6 gap-10">
-          <div className="w-[40%] relative top-[10%]">
+          <div className="w-[40%] relative top-[10%] flex flex-col">
             <p className="text-sm text-fg-muted leading-relaxed">{description}</p>
+            {badges && (
+              <div className="flex flex-wrap gap-2 mt-3">
+                {badges.map((b) => (
+                  <span key={b} className="px-3 py-1 text-[10px] uppercase tracking-widest" style={{ backgroundColor: '#7a153012', color: '#7a1530', border: '1px solid #7a153030' }}>
+                    {b}
+                  </span>
+                ))}
+              </div>
+            )}
           </div>
-          <div className="relative w-[60%] h-full overflow-hidden">
-            <motion.div className="w-full h-full" style={{ scale: imageScale }}>
-              {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img src={url} alt={title} className="absolute inset-0 w-full h-full object-cover" />
-            </motion.div>
+          <div className="relative w-[60%] h-[80%] self-center flex items-center justify-center">
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img src={url} alt={title} className="w-full h-full object-contain" />
           </div>
         </div>
       </motion.div>
@@ -74,6 +83,7 @@ export default function StackingCard({ cards, scrollEl }: { cards: CardData[]; s
             url={card.url}
             title={card.title}
             color={card.color}
+            badges={card.badges}
             description={card.description}
             progress={scrollYProgress}
             range={[i * (1 / cards.length), 1]}
