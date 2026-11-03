@@ -1,5 +1,6 @@
 "use client";
 
+import { RefObject } from "react";
 import { motion } from "motion/react";
 import Features from "@/components/molecules/features";
 import Manifesto from "@/components/molecules/manifesto";
@@ -7,7 +8,7 @@ import Whatwedo from "@/components/molecules/whatwedo";
 
 const E = [0.16, 1, 0.3, 1] as const;
 
-export default function Platforms() {
+export default function Platforms({ scrollEl }: { scrollEl: RefObject<HTMLElement | null> }) {
   return (
     <section id="enterprise-platforms" className="relative">
       <div className="px-10 pt-16 pb-4 flex flex-col gap-0">
@@ -84,7 +85,7 @@ export default function Platforms() {
       </div>
       <Manifesto />
       <Features />
-      <Whatwedo />
+      <Whatwedo scrollEl={scrollEl} />
     </section>
   );
 }

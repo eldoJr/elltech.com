@@ -1,9 +1,7 @@
 'use client';
 
-import { motion } from 'motion/react';
+import { RefObject } from 'react';
 import StackingCard from '@/components/ui/stackingcard';
-
-const E = [0.16, 1, 0.3, 1] as const;
 
 const CARDS = [
   {
@@ -28,11 +26,11 @@ const CARDS = [
     title: 'Enterprise Integration',
     description: 'Event sourcing, CQRS, and saga orchestration to connect heterogeneous systems reliably — with full observability, rollback capability, and documented contracts.',
     url: 'https://images.unsplash.com/photo-1518770660439-4636190af475?w=800&q=80',
-    color: '#e9e9e9',
+    color: '#E9EDEF',
   },
 ];
 
-export default function Whatwedo() {
+export default function Whatwedo({ scrollEl }: { scrollEl: RefObject<HTMLElement | null> }) {
   return (
     <section>
       <div className="px-10 pt-4 pb-8">
@@ -46,7 +44,7 @@ export default function Whatwedo() {
           What We Can Do
         </h2>
       </div>
-      <StackingCard cards={CARDS} />
+      <StackingCard cards={CARDS} scrollEl={scrollEl} />
     </section>
   );
 }

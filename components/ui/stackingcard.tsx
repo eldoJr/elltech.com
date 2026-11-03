@@ -1,6 +1,6 @@
 'use client';
 import { useTransform, motion, useScroll, MotionValue } from 'motion/react';
-import { useRef } from 'react';
+import { useRef, RefObject } from 'react';
 
 interface CardData {
   title: string;
@@ -18,12 +18,14 @@ interface CardProps {
   progress: MotionValue<number>;
   range: [number, number];
   targetScale: number;
+  scrollEl: RefObject<HTMLElement | null>;
 }
 
-export const Card = ({ i, title, description, url, color, progress, range, targetScale }: CardProps) => {
+const Card = ({ i, title, description, url, color, progress, range, targetScale, scrollEl }: CardProps) => {
   const container = useRef(null);
   const { scrollYProgress } = useScroll({
     target: container,
+    container: scrollEl as RefObject<HTMLElement>,
     offset: ['start end', 'start start'],
   });
 
@@ -34,10 +36,10 @@ export const Card = ({ i, title, description, url, color, progress, range, targe
     <div ref={container} className="h-screen flex items-center justify-center sticky top-0">
       <motion.div
         style={{ backgroundColor: color, scale, top: `calc(-5vh + ${i * 25}px)` }}
-        className="flex flex-col relative h-[600px] w-[85%] p-12 origin-top border border-black/10"
+        className="flex flex-col relative -top-[25%] h-[500px] w-[80%] p-10 origin-top border border-black/10"
       >
-        <h2 className="text-2xl text-center font-semibold text-fg-primary">{title}</h2>
-        <div className="flex h-full mt-5 gap-10">
+        <h2 className="text-xl font-bold text-fg-primary mb-1">{title}</h2>
+        <div className="flex h-full mt-6 gap-10">
           <div className="w-[40%] relative top-[10%]">
             <p className="text-sm text-fg-muted leading-relaxed">{description}</p>
           </div>
@@ -53,19 +55,16 @@ export const Card = ({ i, title, description, url, color, progress, range, targe
   );
 };
 
-interface StackingCardProps {
-  cards: CardData[];
-}
-
-export default function StackingCard({ cards }: StackingCardProps) {
+export default function StackingCard({ cards, scrollEl }: { cards: CardData[]; scrollEl: RefObject<HTMLElement | null> }) {
   const container = useRef(null);
   const { scrollYProgress } = useScroll({
     target: container,
+    container: scrollEl as RefObject<HTMLElement>,
     offset: ['start start', 'end end'],
   });
 
   return (
-    <main ref={container}>
+    <div ref={container}>
       {cards.map((card, i) => {
         const targetScale = 1 - (cards.length - i) * 0.05;
         return (
@@ -79,9 +78,10 @@ export default function StackingCard({ cards }: StackingCardProps) {
             progress={scrollYProgress}
             range={[i * (1 / cards.length), 1]}
             targetScale={targetScale}
+            scrollEl={scrollEl}
           />
         );
       })}
-    </main>
+    </div>
   );
 }

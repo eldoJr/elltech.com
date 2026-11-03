@@ -224,7 +224,7 @@ export default function Hero() {
           </div>
 
           <Engineering />
-          <Platforms />
+          <Platforms scrollEl={mainRef} />
           <Application />
           <Data />
 
