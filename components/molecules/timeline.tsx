@@ -1,7 +1,11 @@
 "use client";
 
-import Image from "next/image";
+import { StaticImageData } from "next/image";
 import { motion } from "motion/react";
+import webSearch from "../assets/undraw_web-search_7oif.svg";
+import softwareEngineer from "../assets/undraw_software-engineer_ljie.svg";
+import programming from "../assets/undraw_programming_j1zw.svg";
+import statusPage from "../assets/undraw_status-page_46km.svg";
 
 interface Step {
   index: number;
@@ -10,7 +14,7 @@ interface Step {
   body: string;
   bullets: string[];
   icon: string;
-  image?: string;
+  image?: string | StaticImageData;
 }
 
 const STEPS: Step[] = [
@@ -21,7 +25,7 @@ const STEPS: Step[] = [
     body: "Understanding the problem, context, and goals. We align on scope, risks, and what defines success.",
     bullets: ["Stakeholder interviews & system audits", "Capacity planning & bottleneck analysis", "Technology selection & trade-off documentation"],
     icon: "bi-diagram-3",
-    image: "/perspective-2.svg",
+    image: webSearch,
   },
   {
     index: 2,
@@ -30,7 +34,7 @@ const STEPS: Step[] = [
     body: "Technical design, stack selection, and delivery plan. Decisions that are documented and easy to defend.",
     bullets: ["Distributed system implementation", "Infrastructure provisioning via Terraform", "Automated testing & deployment pipelines"],
     icon: "bi-code-slash",
-    image: "/perspective-1.svg",
+    image: softwareEngineer,
   },
   {
     index: 3,
@@ -39,7 +43,7 @@ const STEPS: Step[] = [
     body: "Short cycles, tested code, and frequent deliveries. You follow progress every step of the way.",
     bullets: ["Distributed tracing & structured logging", "SLO definition & alerting configuration", "Runbook documentation & on-call handoff"],
     icon: "bi-activity",
-    image: "/perspective-3.svg",
+    image: programming,
   },
   {
     index: 4,
@@ -48,7 +52,7 @@ const STEPS: Step[] = [
     body: "Monitoring, evolution, and continuous support. The system stays reliable long after launch.",
     bullets: ["Load testing & performance profiling", "Cost optimisation & right-sizing", "Architecture evolution & roadmap planning"],
     icon: "bi-graph-up-arrow",
-    image: "/perspective-4.webp",
+    image: statusPage,
   },
 ];
 
@@ -56,23 +60,23 @@ const E = [0.16, 1, 0.3, 1] as const;
 
 export default function Timeline() {
   return (
-    <div className="px-10 pb-16 flex flex-col gap-16">
+    <div className="px-10 pt-16 pb-16 flex flex-col gap-16">
 
       {/* Header */}
-      <motion.div
-        className="mb-10"
-        initial={{ opacity: 0, y: 20 }}
-        whileInView={{ opacity: 1, y: 0 }}
-        viewport={{ once: true, margin: "-10%" }}
-        transition={{ duration: 0.9, ease: E }}
-      >
-        <h2 className="text-[clamp(2rem,4vw,3.5rem)] leading-[0.95] font-bold text-fg-primary mb-3">
+      <div className="pb-4">
+        <span className="text-[10px] uppercase tracking-widest text-fg-muted mb-3 block">
+          Process
+        </span>
+        <h2
+          className="text-[clamp(3rem,6vw,6rem)] leading-[0.95] font-bold text-fg-primary mb-3"
+          style={{ fontFamily: "var(--font-syne)" }}
+        >
           How We Work
         </h2>
-        <p className="text-sm font-semibold text-fg-primary">
+        <p className="text-sm text-fg-muted leading-relaxed max-w-sm">
           A predictable process, with visibility at every step.
         </p>
-      </motion.div>
+      </div>
 
       {STEPS.map((step, i) => {
         const flip = i % 2 !== 0;
@@ -84,13 +88,7 @@ export default function Timeline() {
             viewport={{ once: true, margin: "-8%" }}
             transition={{ duration: 0.5, ease: E }}
           >
-            <motion.div
-              className="h-px bg-black/10"
-              initial={{ scaleX: 0, originX: 0 }}
-              whileInView={{ scaleX: 1 }}
-              viewport={{ once: true, margin: "-8%" }}
-              transition={{ duration: 0.9, ease: E }}
-            />
+
 
             <div className="grid grid-cols-1 lg:grid-cols-2">
 
@@ -149,18 +147,18 @@ export default function Timeline() {
 
               {/* Media panel */}
               <motion.div
-                className={`relative bg-black/[0.03] aspect-video lg:aspect-auto min-h-[280px] overflow-hidden ${flip ? "lg:order-1" : ""}`}
+                className={`relative flex items-center justify-center min-h-[140px] max-h-[300px] overflow-hidden ${flip ? "lg:order-1" : ""}`}
                 initial={{ opacity: 0, scale: 0.97 }}
                 whileInView={{ opacity: 1, scale: 1 }}
                 viewport={{ once: true, margin: "-8%" }}
                 transition={{ duration: 1, ease: E, delay: 0.15 }}
               >
                 {step.image ? (
-                  <Image
-                    src={step.image}
+                  // eslint-disable-next-line @next/next/no-img-element
+                  <img
+                    src={typeof step.image === "string" ? step.image : (step.image as StaticImageData).src}
                     alt=""
-                    fill
-                    className={`object-cover ${step.index === 4 ? "object-bottom" : "object-center"}`}
+                    className="w-full h-auto max-h-[280px] object-contain"
                   />
                 ) : (
                   <div className="flex flex-col items-center gap-4">
