@@ -40,13 +40,6 @@ const FEATURES = [
 export default function Features() {
   return (
     <div className="px-10 pb-24">
-      <motion.div
-        className="h-px bg-black/10 mb-16"
-        initial={{ scaleX: 0, originX: 0 }}
-        whileInView={{ scaleX: 1 }}
-        viewport={{ once: true }}
-        transition={{ duration: 1, ease: E }}
-      />
 
       {FEATURES.map((f, i) => (
         <motion.div

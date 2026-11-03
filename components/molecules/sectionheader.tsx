@@ -89,18 +89,22 @@ export default function Sectionheader({ meta, title, icons, logo, description, a
 
       {/* Content row */}
       <motion.div
-        className="grid grid-cols-[1fr_2fr_3fr] gap-10 mb-16"
+        className={`grid gap-10 mb-16 ${icons || logo ? "grid-cols-[1fr_2fr_3fr]" : "grid-cols-1"}`}
         initial="hidden"
         whileInView="show"
         viewport={{ once: true, margin: "-10%" }}
         transition={{ staggerChildren: 0.1, delayChildren: 0.1 }}
       >
-        <motion.div variants={fadeUp} transition={{ duration: 0.8, ease: E }} className="flex items-center gap-3">
-          {icons}
-        </motion.div>
-        <motion.div variants={fadeUp} transition={{ duration: 0.8, ease: E }} className="bg-black/5 flex items-center justify-center aspect-square max-w-[200px]">
-          {logo}
-        </motion.div>
+        {icons && (
+          <motion.div variants={fadeUp} transition={{ duration: 0.8, ease: E }} className="flex items-center gap-3">
+            {icons}
+          </motion.div>
+        )}
+        {logo && (
+          <motion.div variants={fadeUp} transition={{ duration: 0.8, ease: E }} className="bg-black/5 flex items-center justify-center aspect-square max-w-[200px]">
+            {logo}
+          </motion.div>
+        )}
         <motion.p variants={fadeUp} transition={{ duration: 0.8, ease: E }} className="text-sm text-fg-muted leading-relaxed self-center">
           {description.split(/(Elltech)/).map((part, i) =>
             part === "Elltech"

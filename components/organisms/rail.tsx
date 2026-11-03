@@ -31,14 +31,11 @@ function RailItem({
   globalProgress: MotionValue<number>;
   onItemClick: (id: string) => void;
 }) {
-  const topWidth = useTransform(globalProgress, (g) => {
-    if (index === 0) return "0%";
-    const pct = Math.min(Math.max((g - (index - 1)) * 100, 0), 100);
-    return `${pct}%`;
-  });
   const bottomWidth = useTransform(globalProgress, (g) => {
-    const pct = Math.min(Math.max((g - index) * 100, 0), 100);
-    return `${pct}%`;
+    const frac = g - index;
+    if (frac <= 0) return "0%";
+    if (frac >= 1) return "0%";
+    return `${frac * 100}%`;
   });
   // number fades from muted to primary as item becomes active
   const numOpacity = useTransform(globalProgress, (g) => {
@@ -68,8 +65,6 @@ function RailItem({
           className="text-[10px] uppercase tracking-widest text-fg-primary"
           style={{ opacity: labelOpacity }}
         >{label}</motion.span>
-        <div className="absolute top-0 left-0 right-0 h-px bg-black/10" />
-        <motion.div className="absolute top-0 left-0 h-px bg-black" style={{ width: topWidth }} />
         <div className="absolute bottom-0 left-0 right-0 h-px bg-black/10" />
         <motion.div className="absolute bottom-0 left-0 h-px bg-black" style={{ width: bottomWidth }} />
       </motion.div>
