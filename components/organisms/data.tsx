@@ -1,4 +1,5 @@
 import Sectionheader from "@/components/molecules/sectionheader";
+import Aiexperts from "@/components/molecules/aiexperts";
 
 export default function Data() {
   return (
@@ -7,11 +8,9 @@ export default function Data() {
         meta={["Data & AI Services", "Intelligent Systems"]}
         title={"Data &\nAI Services"}
         description={"Elltech builds data pipelines, machine learning systems, and AI-powered products that turn raw information into strategic advantage at scale."}
-        stats={[
-          { label: "Models Deployed", value: "120+" },
-          { label: "Data Processed", value: "10TB+" },
-        ]}
+        stats={[]}
       />
+      <Aiexperts />
     </section>
   );
 }
