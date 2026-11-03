@@ -21,17 +21,68 @@ const SCROLL_SPRING = { stiffness: 80, damping: 20, mass: 0.8 };
 const E = [0.16, 1, 0.3, 1] as const;
 const T = { ease: E, duration: 1.4 };
 
-function List({
-  barWidth,
-  listRef,
-  ready,
-  activeIndex,
-  onItemClick,
+// globalProgress is a continuous 0→N value where N = items.length
+// integer part = active index, fractional part = within-section progress
+// e.g. 1.4 means item[1] is active, 40% through it
+function RailItem({
+  n, label, id, index, ready, globalProgress, onItemClick,
 }: {
-  barWidth: MotionValue<string>;
+  n: string; label: string; id: string; index: number; ready: boolean;
+  globalProgress: MotionValue<number>;
+  onItemClick: (id: string) => void;
+}) {
+  const topWidth = useTransform(globalProgress, (g) => {
+    if (index === 0) return "0%";
+    const pct = Math.min(Math.max((g - (index - 1)) * 100, 0), 100);
+    return `${pct}%`;
+  });
+  const bottomWidth = useTransform(globalProgress, (g) => {
+    const pct = Math.min(Math.max((g - index) * 100, 0), 100);
+    return `${pct}%`;
+  });
+  // number fades from muted to primary as item becomes active
+  const numOpacity = useTransform(globalProgress, (g) => {
+    const t = Math.min(Math.max(g - (index - 0.3), 0), 0.3) / 0.3;
+    return 0.35 + t * 0.65;
+  });
+  // label weight: interpolate letter-spacing tighter when active
+  const labelOpacity = useTransform(globalProgress, (g) => {
+    const t = Math.min(Math.max(g - (index - 0.3), 0), 0.3) / 0.3;
+    return 0.45 + t * 0.55;
+  });
+
+  return (
+    <div className="overflow-hidden">
+      <motion.div
+        className="relative flex items-center gap-4 py-2 hover:bg-black/5 cursor-pointer transition-colors"
+        initial={{ y: "105%" }}
+        animate={ready ? { y: "0%" } : {}}
+        transition={{ ...T, delay: index * 0.07 }}
+        onClick={() => onItemClick(id)}
+      >
+        <motion.span
+          className="text-[10px] w-5 text-fg-primary"
+          style={{ opacity: numOpacity }}
+        >{n}</motion.span>
+        <motion.span
+          className="text-[10px] uppercase tracking-widest text-fg-primary"
+          style={{ opacity: labelOpacity }}
+        >{label}</motion.span>
+        <div className="absolute top-0 left-0 right-0 h-px bg-black/10" />
+        <motion.div className="absolute top-0 left-0 h-px bg-black" style={{ width: topWidth }} />
+        <div className="absolute bottom-0 left-0 right-0 h-px bg-black/10" />
+        <motion.div className="absolute bottom-0 left-0 h-px bg-black" style={{ width: bottomWidth }} />
+      </motion.div>
+    </div>
+  );
+}
+
+function List({
+  listRef, ready, globalProgress, onItemClick,
+}: {
   listRef: React.RefObject<HTMLDivElement>;
   ready: boolean;
-  activeIndex: number;
+  globalProgress: MotionValue<number>;
   onItemClick: (id: string) => void;
 }) {
   return (
@@ -48,22 +99,13 @@ function List({
         </motion.div>
       </div>
       {items.map(({ n, label, id }, i) => (
-        <div key={n} className="overflow-hidden">
-          <motion.div
-            className="relative flex items-center gap-4 py-2 border-b border-black/10 hover:bg-black/5 cursor-pointer transition-colors"
-            initial={{ y: "105%" }}
-            animate={ready ? { y: "0%" } : {}}
-            transition={{ ...T, delay: i * 0.07 }}
-            onClick={() => onItemClick(id)}
-          >
-            <span className={`text-[10px] w-5 transition-colors ${activeIndex === i ? "text-fg-primary" : "text-fg-muted"}`}>{n}</span>
-            <span className={`text-[10px] uppercase tracking-widest transition-colors ${activeIndex === i ? "text-fg-primary font-medium" : "text-fg-primary"}`}>{label}</span>
-            <motion.div
-              className="absolute bottom-0 left-0 h-[1.5px] bg-fg-primary"
-              style={{ width: activeIndex === i ? barWidth : "0%" }}
-            />
-          </motion.div>
-        </div>
+        <RailItem
+          key={n}
+          n={n} label={label} id={id} index={i}
+          ready={ready}
+          globalProgress={globalProgress}
+          onItemClick={onItemClick}
+        />
       ))}
       <div className="py-3" />
     </div>
@@ -80,6 +122,8 @@ export default function Rail({ scrollEl, logoRef, ready, bgTinted }: Props) {
 
   const raw = useMotionValue(0);
   const progress = useSpring(raw, SCROLL_SPRING);
+  const rawGlobal = useMotionValue(0);
+  const globalProgress = useSpring(rawGlobal, { stiffness: 120, damping: 28, mass: 0.6 });
 
   useEffect(() => {
     if (!asideRef.current) return;
@@ -92,23 +136,31 @@ export default function Rail({ scrollEl, logoRef, ready, bgTinted }: Props) {
   useEffect(() => {
     if (!scrollEl) return;
     const onScroll = () => {
-      const max = scrollEl.scrollHeight - scrollEl.clientHeight;
+      const ctaEl = scrollEl.querySelector("#cta");
+      const ctaBottom = ctaEl
+        ? (ctaEl as HTMLElement).offsetTop + (ctaEl as HTMLElement).offsetHeight
+        : scrollEl.scrollHeight;
+      const max = ctaBottom - scrollEl.clientHeight;
       raw.set(max > 0 ? Math.min(Math.max(scrollEl.scrollTop / max, 0), 1) : 0);
 
-      // Determine active section
+      // Compute continuous globalProgress: index + fraction within section
       const sectionIds = items.map((item) => item.id);
-      let current = 0;
-      sectionIds.forEach((id, i) => {
-        const el = scrollEl.querySelector(`#${id}`);
-        if (el) {
-          const rect = el.getBoundingClientRect();
-          const containerRect = scrollEl.getBoundingClientRect();
-          if (rect.bottom - containerRect.top <= containerRect.height) {
-            current = i;
-          }
-        }
-      });
-      setActiveIndex(current);
+      let globalVal = 0;
+      for (let i = 0; i < sectionIds.length; i++) {
+        const el = scrollEl.querySelector(`#${sectionIds[i]}`) as HTMLElement | null;
+        if (!el) continue;
+        const top = el.offsetTop;
+        const height = el.offsetHeight;
+        const scrolled = scrollEl.scrollTop - top;
+        if (scrolled < 0) break;
+        const frac = Math.min(scrolled / height, 1);
+        globalVal = i + frac;
+        if (frac < 1) break;
+      }
+      rawGlobal.set(globalVal);
+
+      let current = Math.floor(globalVal);
+      setActiveIndex(Math.min(current, sectionIds.length - 1));
     };
     scrollEl.addEventListener("scroll", onScroll, { passive: true });
     return () => scrollEl.removeEventListener("scroll", onScroll);
@@ -138,7 +190,7 @@ export default function Rail({ scrollEl, logoRef, ready, bgTinted }: Props) {
     return -progress.get() * (areaEl.offsetHeight - listEl.offsetHeight - 24);
   });
 
-  const barWidth = useTransform(progress, [0, 1], ["0%", "100%"]);
+
 
   return (
     <aside ref={asideRef} className="w-[32vw] flex-shrink-0 flex flex-col h-screen sticky top-0 overflow-hidden relative" style={{ backgroundColor: "#ffffff" }}>
@@ -180,10 +232,9 @@ export default function Rail({ scrollEl, logoRef, ready, bgTinted }: Props) {
           style={{ y: listY, backgroundColor: "#ffffff" }}
         >
           <List
-            barWidth={barWidth}
             listRef={listRef as React.RefObject<HTMLDivElement>}
             ready={ready}
-            activeIndex={activeIndex}
+            globalProgress={globalProgress}
             onItemClick={scrollToSection}
           />
         </motion.div>
