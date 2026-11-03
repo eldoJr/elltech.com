@@ -6,7 +6,6 @@ import Rail from "@/components/organisms/rail";
 import Intro from "@/components/organisms/intro";
 import Engineering from "@/components/organisms/engineering";
 import Platforms from "@/components/organisms/platforms";
-import Application from "@/components/organisms/application";
 import Data from "@/components/organisms/data";
 
 const E = [0.16, 1, 0.3, 1] as const;
@@ -225,7 +224,6 @@ export default function Hero() {
 
           <Engineering />
           <Platforms scrollEl={mainRef} />
-          <Application />
           <Data />
 
         </main>

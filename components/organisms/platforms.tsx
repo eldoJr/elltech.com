@@ -5,6 +5,7 @@ import { motion } from "motion/react";
 import Features from "@/components/molecules/features";
 import Manifesto from "@/components/molecules/manifesto";
 import Whatwedo from "@/components/molecules/whatwedo";
+import Technologies from "@/components/molecules/technologies";
 
 const E = [0.16, 1, 0.3, 1] as const;
 
@@ -86,6 +87,7 @@ export default function Platforms({ scrollEl }: { scrollEl: RefObject<HTMLElemen
       <Manifesto />
       <Features />
       <Whatwedo scrollEl={scrollEl} />
+      <Technologies />
     </section>
   );
 }
