@@ -1,38 +1,39 @@
 'use client';
 
 import { motion } from 'motion/react';
+import { LogoCloud } from '@/components/ui/logocloud';
 
 const E = [0.16, 1, 0.3, 1] as const;
 
 const TECHS = [
-  { name: 'TypeScript', icon: 'https://cdn.simpleicons.org/typescript/3178C6' },
-  { name: 'Python', icon: 'https://cdn.simpleicons.org/python/3776AB' },
-  { name: 'Go', icon: 'https://cdn.simpleicons.org/go/00ADD8' },
-  { name: 'Rust', icon: 'https://cdn.simpleicons.org/rust/B7410E' },
-  { name: 'Java', icon: 'https://cdn.simpleicons.org/openjdk/E76F00' },
-  { name: 'Swift', icon: 'https://cdn.simpleicons.org/swift/F05138' },
-  { name: 'Kotlin', icon: 'https://cdn.simpleicons.org/kotlin/7F52FF' },
-  { name: 'React', icon: 'https://cdn.simpleicons.org/react/61DAFB' },
-  { name: 'Next.js', icon: 'https://cdn.simpleicons.org/nextdotjs/555555' },
-  { name: 'Vue', icon: 'https://cdn.simpleicons.org/vuedotjs/4FC08D' },
-  { name: 'Angular', icon: 'https://cdn.simpleicons.org/angular/DD0031' },
-  { name: 'Tailwind', icon: 'https://cdn.simpleicons.org/tailwindcss/06B6D4' },
-  { name: 'Node.js', icon: 'https://cdn.simpleicons.org/nodedotjs/339933' },
-  { name: '.NET', icon: 'https://cdn.simpleicons.org/dotnet/512BD4' },
-  { name: 'GraphQL', icon: 'https://cdn.simpleicons.org/graphql/E10098' },
-  { name: 'AWS', icon: 'https://cdn.simpleicons.org/icloud/FF9900' },
-  { name: 'GCP', icon: 'https://cdn.simpleicons.org/googlecloud/4285F4' },
-  { name: 'Azure', icon: 'https://cdn.simpleicons.org/alibabacloud/FF6A00' },
-  { name: 'Docker', icon: 'https://cdn.simpleicons.org/docker/2496ED' },
-  { name: 'Kubernetes', icon: 'https://cdn.simpleicons.org/kubernetes/326CE5' },
-  { name: 'Terraform', icon: 'https://cdn.simpleicons.org/terraform/844FBA' },
-  { name: 'OpenAI', icon: 'https://cdn.simpleicons.org/huggingface/FF9D00' },
-  { name: 'Cursor', icon: 'https://cdn.simpleicons.org/cursor/412991' },
-  { name: 'GitHub Copilot', icon: 'https://cdn.simpleicons.org/githubcopilot/6e40c9' },
-  { name: 'PostgreSQL', icon: 'https://cdn.simpleicons.org/postgresql/4169E1' },
-  { name: 'Redis', icon: 'https://cdn.simpleicons.org/redis/FF4438' },
-  { name: 'MongoDB', icon: 'https://cdn.simpleicons.org/mongodb/47A248' },
-  { name: 'Kafka', icon: 'https://cdn.simpleicons.org/apachekafka/555555' },
+  { src: 'https://cdn.simpleicons.org/typescript/3178C6', alt: 'TypeScript' },
+  { src: 'https://cdn.simpleicons.org/python/3776AB', alt: 'Python' },
+  { src: 'https://cdn.simpleicons.org/go/00ADD8', alt: 'Go' },
+  { src: 'https://cdn.simpleicons.org/rust/B7410E', alt: 'Rust' },
+  { src: 'https://cdn.simpleicons.org/openjdk/E76F00', alt: 'Java' },
+  { src: 'https://cdn.simpleicons.org/swift/F05138', alt: 'Swift' },
+  { src: 'https://cdn.simpleicons.org/kotlin/7F52FF', alt: 'Kotlin' },
+  { src: 'https://cdn.simpleicons.org/react/61DAFB', alt: 'React' },
+  { src: 'https://cdn.simpleicons.org/nextdotjs/555555', alt: 'Next.js' },
+  { src: 'https://cdn.simpleicons.org/vuedotjs/4FC08D', alt: 'Vue' },
+  { src: 'https://cdn.simpleicons.org/angular/DD0031', alt: 'Angular' },
+  { src: 'https://cdn.simpleicons.org/tailwindcss/06B6D4', alt: 'Tailwind' },
+  { src: 'https://cdn.simpleicons.org/nodedotjs/339933', alt: 'Node.js' },
+  { src: 'https://cdn.simpleicons.org/dotnet/512BD4', alt: '.NET' },
+  { src: 'https://cdn.simpleicons.org/graphql/E10098', alt: 'GraphQL' },
+  { src: 'https://cdn.simpleicons.org/icloud/FF9900', alt: 'AWS' },
+  { src: 'https://cdn.simpleicons.org/googlecloud/4285F4', alt: 'GCP' },
+  { src: 'https://cdn.simpleicons.org/alibabacloud/FF6A00', alt: 'Azure' },
+  { src: 'https://cdn.simpleicons.org/docker/2496ED', alt: 'Docker' },
+  { src: 'https://cdn.simpleicons.org/kubernetes/326CE5', alt: 'Kubernetes' },
+  { src: 'https://cdn.simpleicons.org/terraform/844FBA', alt: 'Terraform' },
+  { src: 'https://cdn.21st.dev/assets/mirror/2b/2bcdd4124223e3bf8e66bc08ce0ac32a6cc42ffe3584bbecfd377847176a188d.svg', alt: 'OpenAI' },
+  { src: 'https://cdn.simpleicons.org/cursor/412991', alt: 'Cursor' },
+  { src: 'https://cdn.simpleicons.org/githubcopilot/6e40c9', alt: 'GitHub Copilot' },
+  { src: 'https://cdn.simpleicons.org/postgresql/4169E1', alt: 'PostgreSQL' },
+  { src: 'https://cdn.simpleicons.org/redis/FF4438', alt: 'Redis' },
+  { src: 'https://cdn.simpleicons.org/mongodb/47A248', alt: 'MongoDB' },
+  { src: 'https://cdn.simpleicons.org/apachekafka/555555', alt: 'Kafka' },
 ];
 
 export default function Technologies() {
@@ -83,30 +84,16 @@ export default function Technologies() {
 
         {/* Logos */}
         <motion.div
-          className="grid grid-cols-7 sm:grid-cols-10 lg:grid-cols-14 gap-6"
-          initial="hidden"
-          whileInView="show"
+          initial={{ opacity: 0, y: 14 }}
+          whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true, margin: '-8%' }}
-          transition={{ staggerChildren: 0.03 }}
+          transition={{ duration: 0.75, ease: E }}
         >
-          {TECHS.map((tech) => (
-            <motion.div
-              key={tech.name}
-              className="flex flex-col items-center gap-2 group cursor-default"
-              variants={{ hidden: { opacity: 0, y: 10 }, show: { opacity: 1, y: 0 } }}
-              transition={{ duration: 0.5, ease: E }}
-            >
-              {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img
-                src={tech.icon}
-                alt={tech.name}
-                className="w-7 h-7 object-contain opacity-50 group-hover:opacity-100 transition-opacity duration-200"
-              />
-              <span className="text-[9px] uppercase tracking-widest text-fg-muted text-center leading-tight opacity-0 group-hover:opacity-100 transition-opacity duration-200">
-                {tech.name}
-              </span>
-            </motion.div>
-          ))}
+          <LogoCloud
+            logos={TECHS}
+            style={{ gridTemplateColumns: 'repeat(7, minmax(0, 1fr))' }}
+            className="w-full rounded-lg overflow-hidden"
+          />
         </motion.div>
 
         {/* CTA */}

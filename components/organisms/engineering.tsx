@@ -2,7 +2,6 @@ import Image from "next/image";
 import Sectionheader from "@/components/molecules/sectionheader";
 import Timeline from "@/components/molecules/timeline";
 import Services from "@/components/molecules/services";
-import Cta from "@/components/molecules/cta";
 
 export default function Engineering() {
   return (
@@ -56,7 +55,6 @@ export default function Engineering() {
       />
       <Services />
       <Timeline />
-      <Cta />
     </section>
   );
 }

@@ -7,6 +7,7 @@ import Intro from "@/components/organisms/intro";
 import Engineering from "@/components/organisms/engineering";
 import Platforms from "@/components/organisms/platforms";
 import Data from "@/components/organisms/data";
+import { StickyFooter } from "@/components/ui/stickyfooter";
 
 const E = [0.16, 1, 0.3, 1] as const;
 const D = 1.4;
@@ -83,6 +84,7 @@ export default function Hero() {
         setBgTinted(false);
         animate(mainRef.current, { backgroundColor: "#ffffff" }, { duration: 1.2, ease: [0.16, 1, 0.3, 1] });
       }
+
     };
     scrollEl.addEventListener("scroll", onScroll, { passive: true });
     return () => scrollEl.removeEventListener("scroll", onScroll);
@@ -225,6 +227,7 @@ export default function Hero() {
           <Engineering />
           <Platforms scrollEl={mainRef} />
           <Data />
+          <StickyFooter />
 
         </main>
       </div>

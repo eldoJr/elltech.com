@@ -188,7 +188,11 @@ export default function Rail({ scrollEl, logoRef, ready, bgTinted }: Props) {
 
 
   return (
-    <aside ref={asideRef} className="w-[32vw] flex-shrink-0 flex flex-col h-screen sticky top-0 overflow-hidden relative" style={{ backgroundColor: "#ffffff" }}>
+    <aside
+      ref={asideRef}
+      className="w-[32vw] flex-shrink-0 flex flex-col h-screen sticky top-0 overflow-hidden relative"
+      style={{ backgroundColor: "#ffffff" }}
+    >
 
       {/* Logo */}
       <div className="px-8 py-6 flex-shrink-0 relative z-10">

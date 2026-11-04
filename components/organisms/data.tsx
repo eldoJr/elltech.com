@@ -1,5 +1,8 @@
 import Sectionheader from "@/components/molecules/sectionheader";
 import Aiexperts from "@/components/molecules/aiexperts";
+import Projects from "@/components/molecules/projects";
+import Nextsteps from "@/components/molecules/nextsteps";
+import Faq from "@/components/molecules/faq";
 
 export default function Data() {
   return (
@@ -11,6 +14,9 @@ export default function Data() {
         stats={[]}
       />
       <Aiexperts />
+      <Projects />
+      <Nextsteps />
+      <Faq />
     </section>
   );
 }
